@@ -4,8 +4,8 @@ Using hibernate with MySQL:
 ```
 spring.application.name=Spring-Boot
 spring.datasource.url=jdbc:mysql://localhost:3306/user_management
-spring.datasource.username=root
-spring.datasource.password=pate
+spring.datasource.username=****
+spring.datasource.password=****
 
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
 spring.jpa.hibernate.ddl-auto=update
