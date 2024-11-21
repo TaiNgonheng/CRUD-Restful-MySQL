@@ -2,10 +2,12 @@ package Restful_Webservice.Spring.Boot.service.impl;
 
 import Restful_Webservice.Spring.Boot.dto.UserDto;
 import Restful_Webservice.Spring.Boot.entity.User;
+import Restful_Webservice.Spring.Boot.mapper.AutoUserMapper;
 import Restful_Webservice.Spring.Boot.mapper.UserMapper;
 import Restful_Webservice.Spring.Boot.repository.UserRepository;
 import Restful_Webservice.Spring.Boot.service.UserService;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +17,16 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
+
     private UserRepository userRepository;
+    private ModelMapper modelMapper;
+
     @Override
     public UserDto createUser(UserDto userDto) {
-        UserDto saveUserDto = UserMapper.mapToUserDto(userRepository.save(UserMapper.mapToUser(userDto)));
+//        User user = modelMapper.map(userDto,User.class);
+        User user = AutoUserMapper.MAPPER.mapToUser(userDto);
+        User savedUser = userRepository.save(user);
+        UserDto saveUserDto = AutoUserMapper.MAPPER.mapToUserDto(savedUser);
         return saveUserDto;
     }
 
@@ -26,13 +34,13 @@ public class UserServiceImpl implements UserService {
     public UserDto getUserByID(Long userId) {
        Optional<User> optionalUser= userRepository.findById(userId);
         User user= optionalUser.get();
-        return UserMapper.mapToUserDto(user);
+        return AutoUserMapper.MAPPER.mapToUserDto(user);
     }
 
     @Override
     public List<UserDto> getAllUser() {
         List<User> users = userRepository.findAll();
-        return users.stream().map(UserMapper::mapToUserDto).collect(Collectors.toList());
+        return users.stream().map((user)->AutoUserMapper.MAPPER.mapToUserDto(user)).collect(Collectors.toList());
     }
 
     @Override
@@ -42,7 +50,7 @@ public class UserServiceImpl implements UserService {
         existingUser.setFirstname(userDto.getFirstname());
         existingUser.setLastname(userDto.getLastname());
         existingUser.setEmail(userDto.getEmail());
-        return UserMapper.mapToUserDto(userRepository.save(existingUser));
+        return AutoUserMapper.MAPPER.mapToUserDto(userRepository.save(existingUser));
 //        return userRepository.save(existingUser);
     }
 
