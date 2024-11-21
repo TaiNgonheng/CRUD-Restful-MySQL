@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -17,30 +18,32 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     @Override
     public UserDto createUser(UserDto userDto) {
-        User user = UserMapper.mapToUser(userDto);
-        UserDto saveUserDto = UserMapper.mapToUserDto(userRepository.save(user));
+        UserDto saveUserDto = UserMapper.mapToUserDto(userRepository.save(UserMapper.mapToUser(userDto)));
         return saveUserDto;
     }
 
     @Override
-    public User getUserByID(Long userId) {
+    public UserDto getUserByID(Long userId) {
        Optional<User> optionalUser= userRepository.findById(userId);
-        return optionalUser.get();
+        User user= optionalUser.get();
+        return UserMapper.mapToUserDto(user);
     }
 
     @Override
-    public List<User> getAllUser() {
-        return userRepository.findAll();
+    public List<UserDto> getAllUser() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(UserMapper::mapToUserDto).collect(Collectors.toList());
     }
 
     @Override
-    public User updateUser(User user) {
-        User existingUser = userRepository.findById(user.getId()).get();
+    public UserDto updateUser(UserDto userDto) {
+        User existingUser = userRepository.findById(userDto.getId()).get();
 //        existingUser.setId(user.getId());
-        existingUser.setFirstname(user.getFirstname());
-        existingUser.setLastname(user.getLastname());
-        existingUser.setEmail(user.getEmail());
-        return userRepository.save(existingUser);
+        existingUser.setFirstname(userDto.getFirstname());
+        existingUser.setLastname(userDto.getLastname());
+        existingUser.setEmail(userDto.getEmail());
+        return UserMapper.mapToUserDto(userRepository.save(existingUser));
+//        return userRepository.save(existingUser);
     }
 
     @Override
