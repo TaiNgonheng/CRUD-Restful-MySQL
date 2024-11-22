@@ -4,6 +4,7 @@ import Restful_Webservice.Spring.Boot.dto.UserDto;
 import Restful_Webservice.Spring.Boot.exception.ErrorDetails;
 import Restful_Webservice.Spring.Boot.exception.ResourceNotFoundException;
 import Restful_Webservice.Spring.Boot.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class UserController {
     private UserService userService;
     //build create user Rest API
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto user){
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto user){
         UserDto saveUser= userService.createUser(user);
         return new ResponseEntity<>(saveUser,HttpStatus.CREATED);
     }
@@ -35,7 +36,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUser());
     }
     @PutMapping("{id}")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto,@PathVariable("id") Long userId){
+    public ResponseEntity<UserDto> updateUser(@RequestBody @Valid UserDto userDto,@PathVariable("id") Long userId){
        userDto.setId(userId);
 //       User update= userService.updateUser(user);
        return ResponseEntity.ok(userService.updateUser(userDto));
